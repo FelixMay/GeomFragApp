@@ -88,11 +88,11 @@ ui <- fluidPage(
              tableOutput("tab_div_frag")))
   ),
   
-  tags$h5("Fuer mehr Information zu geometrischen Fragmentierungseffekten siehe:"),
+  tags$h5("Fuer mehr Information zu geometrischen Fragmentierungseffekten siehe:",
+          tags$a(href = "https://www.biorxiv.org/content/early/2018/10/13/442467","May et al. (2018) bioRxiv")),
   
-  tags$a(href = "https://www.biorxiv.org/content/early/2018/10/13/442467","May et al. (2018) bioRxiv"),
-  
-  tags$h5("Quellcode dieser App:")
+  tags$h5("Quellcode dieser App in", tags$strong("R"),":",
+          tags$a(href = "https://github.com/FelixMay/GeomFragApp","GitHub"))
 )
 
 server <- function(input, output) {
