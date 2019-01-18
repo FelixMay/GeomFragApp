@@ -39,7 +39,7 @@ ui <- fluidPage(
              h4("Landschaftsparameter"),
              numericInput("hab_amount", "Habitat Menge [0 - 100%]", 50,
                       min = 0, max = 100, step = 5),
-             numericInput("hab_rough", "Fragmentierung per se [0 - 2]", 1.0,
+             numericInput("hab_rough", "Fragmentierung per se [0 - 2]", 0.0,
                       min = 0, max = 2, step = 0.1),
              actionButton("updateMap","Aktualisiere Landschaft")
            )
