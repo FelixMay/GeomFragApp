@@ -132,8 +132,8 @@ server <- function(input, output) {
                                                "Distanz zum naechsten Nachbarn (Mittelwert)",
                                                "Distanz zum naechsten Nachbarn (Standardabw.)"
                                                ),
-                         Einheit = c("","ha","ha","m","m"),
-                         Wert = class_metrics$value
+                         Wert = class_metrics$value,
+                         Einheit = c("","ha","ha","m","m")
         )
     table1
   })
