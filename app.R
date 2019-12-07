@@ -2,6 +2,7 @@ library(shiny)
 library(NLMR)
 library(landscapetools)
 library(landscapemetrics)
+library(dplyr)
 library(raster)
 library(rgdal)
 library(mobsim)
@@ -89,7 +90,7 @@ ui <- fluidPage(
   ),
   
   tags$h5("Fuer mehr Information zu geometrischen Fragmentierungseffekten siehe:",
-          tags$a(href = "https://www.biorxiv.org/content/early/2018/10/13/442467","May et al. (2018) bioRxiv")),
+          tags$a(href = "https://onlinelibrary.wiley.com/doi/10.1002/ece3.4951","May et al. (2019) Ecology & Evolution")),
   
   tags$h5("Quellcode dieser App in", tags$strong("R"),":",
           tags$a(href = "https://github.com/FelixMay/GeomFragApp","GitHub"))
@@ -110,7 +111,10 @@ server <- function(input, output) {
       map1_bin <- map1
       map1_bin[] <- 1
     } else {
-      map1_bin <- util_binarize(map1, breaks = input$hab_amount/100)
+      map1_bin <- map1
+      map1_bin[] <- 0
+      map1_bin[map1 > quantile(map1[], probs = 1.0 - input$hab_amount/100)] <- 1
+      #map1_bin <- util_binarize(map1, breaks = input$hab_amount/100)
     }
     projection(map1_bin) <- "+init=epsg:32631"
     # check_landscape(map1_bin)
@@ -151,11 +155,13 @@ server <- function(input, output) {
     coordinates(points1) = ~x + y
     projection(points1) <- "+init=epsg:32631"
     grid1 <- as(map(), "SpatialGridDataFrame")
+    #grid1 <- as(map1_bin, "SpatialGridDataFrame")
     points1$Class <- as.factor(over(points1, grid1)[[1]])
     points1
   })
   
   div_cont <- reactive({
+    abund_vec <- table(points1$species)
     abund_vec <- table(com1()$species)
     abund_vec <- abund_vec[abund_vec > 0]
     N <- sum(abund_vec)
@@ -169,7 +175,8 @@ server <- function(input, output) {
   output$tab_div_cont <- renderTable(div_cont())
   
   div_frag <- reactive({
-    points2 <- com1()[com1()$Class == "Habitat",]
+    #points2 <- points1$[points1$Class == 1,]
+    points2 <- com1()[com1()$Class == 1,]
     abund_vec <- table(points2$species)
     abund_vec <- abund_vec[abund_vec > 0]
     N <- sum(abund_vec)
@@ -193,7 +200,7 @@ server <- function(input, output) {
   output$com_frag <- renderPlot({
     plot_map(map())
     rb_cols <- rainbow(length(unique(com1()$species)))
-    points2 <- com1()[com1()$Class == "Habitat",]
+    points2 <- com1()[com1()$Class == 1,]
     points(y ~ x, data = points2, pch = 19, col = rb_cols[points2$species])
   })
 
