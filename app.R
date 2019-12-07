@@ -161,7 +161,7 @@ server <- function(input, output) {
   })
   
   div_cont <- reactive({
-    abund_vec <- table(points1$species)
+    # abund_vec <- table(points1$species)
     abund_vec <- table(com1()$species)
     abund_vec <- abund_vec[abund_vec > 0]
     N <- sum(abund_vec)
