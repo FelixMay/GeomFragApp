@@ -32,29 +32,29 @@ plot_map <- function(raster_map){
 
 ui <- fluidPage(
   
-  titlePanel("Simulation geometrischer Fragmentierungseffekte"),
+  titlePanel("Simulation of geometric fragmentation effects"),
   
   fluidRow(
     column(4,
            inputPanel(
-             h4("Landschaftsparameter"),
-             numericInput("hab_amount", "Habitat Menge [0 - 100%]", 50,
+             h4("Landscape parameter"),
+             numericInput("hab_amount", "Habitat amount [0 - 100%]", 50,
                       min = 0, max = 100, step = 5),
-             numericInput("hab_rough", "Fragmentierung per se [0 - 2]", 0.0,
+             numericInput("hab_rough", "Fragmentation per se [0 - 2]", 0.0,
                       min = 0, max = 2, step = 0.1),
-             actionButton("updateMap","Aktualisiere Landschaft")
+             actionButton("updateMap","Update Landscape")
            )
     ),
     column(4,
            inputPanel(
-             h4("Biodiversitaetsparameter"),
-             numericInput("nInd","Gesamtanzahl Individuen [100 - 10000]",
+             h4("Biodiversity parameter"),
+             numericInput("nInd","Total number of individuals [100 - 10000]",
                           min = 100, max = 10000, value = 1000, step = 500),
-             numericInput("nSpec","Anzahl Arten [1 - 100]",
+             numericInput("nSpec","Number of species [1 - 100]",
                           min = 1, max = 100, value = 10, step = 5),
-             numericInput("sigma","Cluster-Groesse [1 - 1000]",
+             numericInput("sigma","Cluster size [1 - 1000]",
                           min = 1, max = 1000, value = 20, step = 10),
-             actionButton("simSpecies","Simuliere Artverbreitung")
+             actionButton("simSpecies","Simulate species distributions")
            )
     )
   ), # end row1
@@ -62,37 +62,37 @@ ui <- fluidPage(
   fluidRow(
     column(4,
            wellPanel(
-             h4("Verteilung von Habitat und Matrix"),
+             h4("Distribution of habitat and matrix"),
              plotOutput("landscape"))),
     column(4,
            wellPanel(
-           h4("Artverbreitung in ungestoerter Landschaft"),
+           h4("Species distributions in continuous habitat"),
            plotOutput("community"))),
     column(4,
            wellPanel(
-           h4("Artverbreitung in fragmentierter Landschaft"),
+           h4("Species distributions in fragmented landscape"),
            plotOutput("com_frag")))
   ),
   
   fluidRow(
     column(4,
            wellPanel(
-             h4("Landschafts-Indices"),
+             h4("Landscape indices"),
              tableOutput("metrics"))),
     column(4,
            wellPanel(
-             h4("Diversitaets-Indices in ungestoerter Landschaft"),
+             h4("Diversity indices in continuous habitat"),
              tableOutput("tab_div_cont"))),
     column(4,
            wellPanel(
-             h4("Diversitaets-Indices in fragmentierter Landschaft"),
+             h4("Diversity indices in fragmented landscape"),
              tableOutput("tab_div_frag")))
   ),
   
-  tags$h5("Fuer mehr Information zu geometrischen Fragmentierungseffekten siehe:",
+  tags$h5("More information on geometric fragmentation effects:",
           tags$a(href = "https://onlinelibrary.wiley.com/doi/10.1002/ece3.4951","May et al. (2019) Ecology & Evolution")),
   
-  tags$h5("Quellcode dieser App in", tags$strong("R"),":",
+  tags$h5("Source code of this App in", tags$strong("R"),":",
           tags$a(href = "https://github.com/FelixMay/GeomFragApp","GitHub"))
 )
 
@@ -130,14 +130,14 @@ server <- function(input, output) {
       lsm_c_enn_sd(map())   # meters
     ) %>% dplyr::filter(class == 1)
 
-    table1 <- data.frame(Landschaftsmetrik = c("Anzahl Fragmente",
-                                               "Fragment-Flaeche (Mittelwert)",
-                                               "Fragment-Flaeche (Standardabw.)",
-                                               "Distanz zum naechsten Nachbarn (Mittelwert)",
-                                               "Distanz zum naechsten Nachbarn (Standardabw.)"
+    table1 <- data.frame(Index = c("No. of fragments",
+                                               "Fragment area (mean)",
+                                               "Fragment area (standard dev.)",
+                                               "Distance to nearest neighbor (mean)",
+                                               "Distance to nearest neighbor (standard dev.)"
                                                ),
-                         Wert = class_metrics$value,
-                         Einheit = c("","ha","ha","m","m")
+                         Value = class_metrics$value,
+                         Unit = c("","ha","ha","m","m")
         )
     table1
   })
@@ -168,7 +168,7 @@ server <- function(input, output) {
     S <- length(abund_vec)
     Shannon <- diversity(abund_vec, index = "shannon")
     J <- Shannon/log(S)
-    data.frame(Index = c("Individuenzahl","Artenzahl","Shannon-Diversity","Evenness"),
+    data.frame(Index = c("No. of individuals","Species richness","Shannon-Diversity","Evenness"),
                Wert = c(N, S, Shannon, J))
   })
   
@@ -183,8 +183,8 @@ server <- function(input, output) {
     S <- length(abund_vec)
     Shannon <- diversity(abund_vec, index = "shannon")
     J <- Shannon/log(S)
-    data.frame(Index = c("Individuenzahl","Artenzahl","Shannon-Diversity","Evenness"),
-               Wert = c(N, S, Shannon, J))
+    data.frame(Index = c("No. of individuals","Species richness","Shannon-Diversity","Evenness"),
+               Value = c(N, S, Shannon, J))
   })
   
   output$tab_div_frag <- renderTable(div_frag())
